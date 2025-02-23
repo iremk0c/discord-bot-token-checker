@@ -1,5 +1,6 @@
 import requests
 import os
+import time
 
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -11,7 +12,6 @@ RESET = "\033[0m"
 def print_banner():
     os.system("clear" if os.name == "posix" else "cls")  
     print(f"""{RED}
-
 ██     ██ ███████ ███████ ███████ ██    ██
 ██     ██ ██      ██      ██      ██    ██
 ██  █  ██ █████   ███████ ███████  ██████
@@ -21,6 +21,7 @@ def print_banner():
 """)
 
 def check_bot_token(bot_token):
+    print(f"{CYAN}Bot tokenini kontrol ediyorum...{RESET}")
     url = "https://discord.com/api/v10/applications/@me"
     headers = {"Authorization": f"Bot {bot_token}"}
 
@@ -34,19 +35,23 @@ def check_bot_token(bot_token):
         avatar_url = f"https://cdn.discordapp.com/app-icons/{bot_data['id']}/{avatar}.png" if avatar else "Avatar yok"
 
         print(f"\n{GREEN}Geçerli Bot Token!{RESET}")
+        print(f"\n{BLUE}Bot Bilgileri:{RESET}")
         print(f" Bot Adı: {bot_data['name']}")
         print(f" Bot ID: {bot_data['id']}")
         print(f" Doğrulandı mı?: {'Evet' if verified_status is True else 'Hayır' if verified_status is False else 'Bilinmiyor'}")
         print(f" Sahip ID: {owner_id}")
         print(f" Avatar: {avatar_url}")
-
+        
+        print(f"\n{BLUE}Botun Sunucularına Bakılıyor...{RESET}")
         check_bot_guilds(bot_token)
         check_bot_permissions(bot_token)
 
     elif response.status_code == 401:
-        print(f"\n{RED}Geçersiz Bot Token!{RESET}")
+        print(f"\n{RED}Geçersiz Bot Token! Lütfen doğru bir token girin.{RESET}")
     elif response.status_code == 429:
-        print(f"\n{YELLOW}Rate limit aşıldı. Lütfen bekleyin.{RESET}")
+        retry_after = int(response.headers.get('Retry-After', 5))  
+        print(f"\n{YELLOW}Rate limit aşıldı. Lütfen {retry_after} saniye bekleyin.{RESET}")
+        time.sleep(retry_after)
     else:
         print(f"\n{YELLOW}Hata Kodu: {response.status_code} - {response.text}{RESET}")
 
@@ -58,7 +63,7 @@ def check_bot_guilds(bot_token):
 
     if response.status_code == 200:
         guilds = response.json()
-        print(f"\n{BLUE}Botun Katıldığı Sunucular: {RESET}")
+        print(f"\n{BLUE}Botun Katıldığı Sunucular:{RESET}")
         if not guilds:
             print(" Sunucu bulunamadı.")
         else:
@@ -79,7 +84,8 @@ def check_bot_permissions(bot_token):
         has_admin = False
 
         for guild in guilds:
-            if guild["permissions"] == "2147483647":  
+            permissions = int(guild["permissions"])
+            if permissions == 2147483647:  
                 print(f" {guild['name']} - ID: {guild['id']} (Admin Yetkisi)")
                 has_admin = True
         
@@ -92,5 +98,5 @@ def check_bot_permissions(bot_token):
 if __name__ == "__main__":
     print_banner()
     
-    bot_token = input(CYAN + " Kontrol edilecek Bot Tokenini gir: " + RESET)
+    bot_token = input(CYAN + "Kontrol edilecek Bot Tokenini gir: " + RESET)
     check_bot_token(bot_token.strip())
