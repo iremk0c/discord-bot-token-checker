@@ -38,6 +38,4 @@ python bot_token_checker.py
 
 
 
-# Lisans
 
-Bu proje, MIT Lisansı ile lisanslanmıştır.
