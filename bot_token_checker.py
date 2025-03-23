@@ -21,7 +21,7 @@ def print_banner():
 """)
 
 def check_bot_token(bot_token):
-    print(f"{CYAN}Bot tokenini kontrol ediyorum...{RESET}")
+    print(f"{CYAN}Bot tokeniniz kontrol ediliyor...{RESET}")
     url = "https://discord.com/api/v10/applications/@me"
     headers = {"Authorization": f"Bot {bot_token}"}
 
@@ -34,7 +34,7 @@ def check_bot_token(bot_token):
         avatar = bot_data.get("icon", None)
         avatar_url = f"https://cdn.discordapp.com/app-icons/{bot_data['id']}/{avatar}.png" if avatar else "Avatar yok"
 
-        print(f"\n{GREEN}Geçerli Bot Token!{RESET}")
+        print(f"\n{GREEN}Geçerli Bot Tokeni.{RESET}")
         print(f"\n{BLUE}Bot Bilgileri:{RESET}")
         print(f" Bot Adı: {bot_data['name']}")
         print(f" Bot ID: {bot_data['id']}")
@@ -47,7 +47,7 @@ def check_bot_token(bot_token):
         check_bot_permissions(bot_token)
 
     elif response.status_code == 401:
-        print(f"\n{RED}Geçersiz Bot Token! Lütfen doğru bir token girin.{RESET}")
+        print(f"\n{RED}Geçersiz Bot Token. Lütfen doğru bir token gir.{RESET}")
     elif response.status_code == 429:
         retry_after = int(response.headers.get('Retry-After', 5))  
         print(f"\n{YELLOW}Rate limit aşıldı. Lütfen {retry_after} saniye bekleyin.{RESET}")
